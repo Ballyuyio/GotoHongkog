@@ -784,8 +784,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AutoWakeSpawner
   wakePrefab: {fileID: 3323387954473017891, guid: 0b912e9003fba894faa88cf964a6fb8a, type: 3}
   spawnPoint: {fileID: 798575458}
-  distanceBetweenSpawns: 2
-  lifeTime: 2
+  distanceBetweenSpawns: 1.5
+  lifeTime: 1
   effectScale: 2
 --- !u!1 &1290334555
 GameObject:

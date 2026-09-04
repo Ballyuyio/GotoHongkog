@@ -20,7 +20,7 @@ public class TopDownCameraFollow : MonoBehaviour
 
     [Header("Look Angle")]
     [Tooltip("มุมก้มของกล้อง")]
-    [Range(10f, 60f)] public float pitchAngle = 26f;
+    [Range(10f, 90f)] public float pitchAngle = 70f;
 
     [Header("Cinematic Lean (เอียงรับแรงเหวี่ยงโค้ง)")]
     [Tooltip("องศาการเอียงกล้องสูงสุดเวลาเลี้ยว (แนะนำ 3 - 6 องศา พอดีตา)")]
