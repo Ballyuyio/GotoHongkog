@@ -18,6 +18,13 @@ public class BoatController : MonoBehaviour
     [Tooltip("ช่วยให้เรือค่อยๆ คืนพวงมาลัย ไม่หักเลี้ยวกระชาก")]
     public float turnSmoothness = 6f;
 
+    [Header("Boat Slide & Drift (ระบบการไถล)")]
+    [Tooltip("ค่ายิ่งน้อยเรือยิ่งลื่น/ไถลออกข้างมาก (0 = ลื่นเหมือนน้ำแข็ง, 1 = เกาะผิวน้ำเลี้ยวคมทันที)")]
+    [Range(0.01f, 100f)]
+    public float lateralGrip = 0.15f;
+    [Tooltip("แรงต้านน้ำชะลอตัวขณะปล่อยคันเร่ง")]
+    public float waterDrag = 0.5f;
+
     [Header("Tilt / Waves Adaptation")]
     public float maxTiltAngle = 16f;
     public float uprightForce = 6f;
@@ -51,6 +58,7 @@ public class BoatController : MonoBehaviour
     private void FixedUpdate()
     {
         ApplyMovement();
+        ApplyBoatDrift();
         ApplySmoothSteeringAndTilt();
     }
 
@@ -82,7 +90,6 @@ public class BoatController : MonoBehaviour
     {
         float forwardInput = inputVector.y;
 
-        // ขับเคลื่อนตามระนาบขนานน้ำเสมอ
         Vector3 forwardDir = transform.forward;
         forwardDir.y = 0f;
         forwardDir.Normalize();
@@ -99,19 +106,45 @@ public class BoatController : MonoBehaviour
         }
     }
 
+    private void ApplyBoatDrift()
+    {
+        // 1. แยกความเร็วตามแนวตั้งและแนวนอน (ไม่ยุ่งกับแกน Y เพื่อให้ฟิสิกส์คลื่น/ลอยน้ำทำงานตามปกติ)
+        Vector3 forward = transform.forward;
+        forward.y = 0f;
+        forward.Normalize();
+
+        Vector3 right = transform.right;
+        right.y = 0f;
+        right.Normalize();
+
+        // 2. หาความเร็วเดินหน้า/ถอยหลัง และความเร็วที่ไถลออกด้านข้าง
+        float forwardSpeed = Vector3.Dot(rb.linearVelocity, forward);
+        float lateralSpeed = Vector3.Dot(rb.linearVelocity, right);
+
+        // 3. ลดแรงไถลออกด้านข้างตามค่า lateralGrip เพื่อจำลองแรงต้านข้างลำเรือ
+        float gripFactor = Mathf.Clamp01(lateralGrip * 10f * Time.fixedDeltaTime);
+        lateralSpeed = Mathf.Lerp(lateralSpeed, 0f, gripFactor);
+
+        // 4. ชะลอความเร็วตามแรงต้านน้ำเวลาปล่อยคันเร่ง
+        if (Mathf.Approximately(inputVector.y, 0f))
+        {
+            forwardSpeed = Mathf.MoveTowards(forwardSpeed, 0f, waterDrag * Time.fixedDeltaTime * 10f);
+        }
+
+        // 5. ปรับค่า linearVelocity โดยรักษาค่าแรงตก/ลอยในแนวแกน Y ไว้ตามเดิม
+        rb.linearVelocity = (forward * forwardSpeed) + (right * lateralSpeed) + new Vector3(0f, rb.linearVelocity.y, 0f);
+    }
+
     private void ApplySmoothSteeringAndTilt()
     {
         float steerInput = inputVector.x;
 
-        // 1. คำนวณอัตราทดการเลี้ยว: ยิ่งวิ่ง ยิ่งเลี้ยวได้คมขึ้น
         float forwardSpeed = Vector3.Dot(rb.linearVelocity, transform.forward);
         float speedFactor = Mathf.Clamp01(Mathf.Abs(forwardSpeed) / 1.5f);
         float effectiveTurnSpeed = turnSpeed * (0.35f + 0.65f * speedFactor);
 
-        // 2. คำนวณแกนหันหัวเรือ (Yaw) แบบ Smooth ไม่มีการสั่ง Force มาขัด
         currentYaw += steerInput * effectiveTurnSpeed * Time.fixedDeltaTime;
 
-        // 3. จัดการแกนเอียงตามคลื่น (Pitch & Roll)
         Vector3 currentEuler = transform.eulerAngles;
         float pitch = NormalizeAngle(currentEuler.x);
         float roll = NormalizeAngle(currentEuler.z);
@@ -119,14 +152,10 @@ public class BoatController : MonoBehaviour
         float clampedPitch = Mathf.Clamp(pitch, -maxTiltAngle, maxTiltAngle);
         float clampedRoll = Mathf.Clamp(roll, -maxTiltAngle, maxTiltAngle);
 
-        // ดึงการเอียงกลับสู่จุดปลอดภัยอย่างนุ่มนวล
         float smoothPitch = Mathf.Lerp(pitch, clampedPitch, Time.fixedDeltaTime * uprightForce);
         float smoothRoll = Mathf.Lerp(roll, clampedRoll, Time.fixedDeltaTime * uprightForce);
 
-        // รวมร่างมุมทั้งหมดเข้าด้วยกันในคำสั่งเดียว ไม่มีการทับซ้อน
         rb.MoveRotation(Quaternion.Euler(smoothPitch, currentYaw, smoothRoll));
-
-        // เคลียร์แรงหมุนแกนตกค้าง ป้องกันฟิสิกส์แอบสะสมแรงเหวี่ยง
         rb.angularVelocity = Vector3.zero;
     }
 
