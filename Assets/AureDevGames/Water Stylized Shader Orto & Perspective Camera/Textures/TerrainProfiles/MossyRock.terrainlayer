@@ -7,7 +7,7 @@ TerrainLayer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: MossyRock
-  m_DiffuseTexture: {fileID: 2800000, guid: b07f0ef3ae100f94b9629df30c75e313, type: 3}
+  m_DiffuseTexture: {fileID: -5537932057985128128, guid: 9d93ea9e43c34ea41b713f98703dc7ea, type: 2}
   m_NormalMapTexture: {fileID: 2800000, guid: 500afbd92ec4c984d8234c4fc6131767, type: 3}
   m_MaskMapTexture: {fileID: 0}
   m_TileSize: {x: 30, y: 30}
@@ -20,3 +20,4 @@ TerrainLayer:
   m_DiffuseRemapMax: {x: 1, y: 1, z: 1, w: 1}
   m_MaskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
   m_MaskMapRemapMax: {x: 1, y: 1, z: 1, w: 1}
+  m_SmoothnessSource: 1

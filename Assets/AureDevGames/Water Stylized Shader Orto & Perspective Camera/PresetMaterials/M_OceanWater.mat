@@ -102,7 +102,7 @@ Material:
     - _CaveBlend: 0
     - _CaveDistortion: 0
     - _DepthCompareDistance: 0.1
-    - _DepthFadeDistance: 150
+    - _DepthFadeDistance: 300
     - _FoamBlend: 0.09
     - _FresnelPower: 1
     - _GradientRefractionScale: 2
@@ -129,7 +129,7 @@ Material:
     - _ReflectionBlend: 0.887
     - _ReflectionDistortion: 0.38
     - _RefractionScale: 2
-    - _RefractionSpeed: 1.15
+    - _RefractionSpeed: 1.96
     - _RefractionStrength: 0
     - _RippleStrength: 83.62
     - _Saturation: 1
@@ -144,7 +144,7 @@ Material:
     - _TileSize: 200
     - _Value: 1
     - _WORLD_SPACE_UV: 1
-    - _WaterAlpha: 1
+    - _WaterAlpha: 0.745
     - _WaterMetallic: 1
     - _WaterSmoothness: 0
     - _WaveLength: 2.36
@@ -160,7 +160,7 @@ Material:
     - _CaveOffset: {r: -0.45, g: 0, b: 0, a: 0}
     - _CaveScale: {r: 0.01, g: 0.01, b: 0, a: 0}
     - _CaveSecondaryColor: {r: 0, g: 0, b: 0, a: 0}
-    - _DeepColor: {r: 0.8113208, g: 0.8113208, b: 0.8113208, a: 1}
+    - _DeepColor: {r: 0, g: 0.6964906, b: 0.9811321, a: 1}
     - _FoamUVsOffset: {r: 1, g: 1, b: 0, a: 0}
     - _FresnelColor: {r: 2.670157, g: 2.670157, b: 2.670157, a: 0}
     - _HorizonColor: {r: 4.274162, g: 2.1975644, b: 3.8848, a: 1}
