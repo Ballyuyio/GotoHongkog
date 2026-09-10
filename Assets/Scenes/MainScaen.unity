@@ -125,7 +125,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 636150628}
+    m_TransformParent: {fileID: 2133029013}
     m_Modifications:
     - target: {fileID: 5108999928068322111, guid: 73009ac3226cf654a9583259f6edbcec, type: 3}
       propertyPath: m_Name
@@ -133,11 +133,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7005451392858158739, guid: 73009ac3226cf654a9583259f6edbcec, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -213.99866
+      value: 8.001343
       objectReference: {fileID: 0}
     - target: {fileID: 7005451392858158739, guid: 73009ac3226cf654a9583259f6edbcec, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 12
+      value: 345
       objectReference: {fileID: 0}
     - target: {fileID: 7005451392858158739, guid: 73009ac3226cf654a9583259f6edbcec, type: 3}
       propertyPath: m_LocalPosition.z
@@ -174,7 +174,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5108999928068322111, guid: 73009ac3226cf654a9583259f6edbcec, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1426644826}
   m_SourcePrefab: {fileID: 100100000, guid: 73009ac3226cf654a9583259f6edbcec, type: 3}
 --- !u!1 &243237713
 GameObject:
@@ -748,10 +751,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: Marlow66
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a04b3e9d8b446de4586333a32e92dce3, type: 3}
+      propertyPath: m_TagString
+      value: Interactable
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a04b3e9d8b446de4586333a32e92dce3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1035005952}
   m_SourcePrefab: {fileID: 100100000, guid: a04b3e9d8b446de4586333a32e92dce3, type: 3}
 --- !u!1 &636150627
 GameObject:
@@ -783,7 +793,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1426644824}
   - {fileID: 2133029013}
   m_Father: {fileID: 1221613316}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -802,7 +811,7 @@ MonoBehaviour:
   mode: 1
   targetPoints:
   - {fileID: 1157812742}
-  currentTargetIndex: 1
+  currentTargetIndex: 0
   spriteArrowTransform: {fileID: 1426644824}
   faceCameraBillboard: 1
   spriteAngleOffset: 0
@@ -1424,11 +1433,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1692f408bb915740992f2fd37192592, type: 3}
+--- !u!1 &1035005950 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: a04b3e9d8b446de4586333a32e92dce3, type: 3}
+  m_PrefabInstance: {fileID: 543320146}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1035005951 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a04b3e9d8b446de4586333a32e92dce3, type: 3}
   m_PrefabInstance: {fileID: 543320146}
   m_PrefabAsset: {fileID: 0}
+--- !u!65 &1035005952
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035005950}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5.19, y: 15.19, z: 23.97}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1157812740
 GameObject:
   m_ObjectHideFlags: 0
@@ -1662,7 +1697,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac7655cc281ccbf4aaa700bb5a73ee0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
-  interactDistance: 3
+  interactDistance: 25
   targetTag: Interactable
   rayOriginOffset: {x: 0, y: -0.5, z: 0}
   showDebugRay: 1
@@ -1697,11 +1732,41 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1221613316}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1426644823 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5108999928068322111, guid: 73009ac3226cf654a9583259f6edbcec, type: 3}
+  m_PrefabInstance: {fileID: 92615982}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1426644824 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7005451392858158739, guid: 73009ac3226cf654a9583259f6edbcec, type: 3}
   m_PrefabInstance: {fileID: 92615982}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &1426644825 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 1299067098426991632, guid: 73009ac3226cf654a9583259f6edbcec, type: 3}
+  m_PrefabInstance: {fileID: 92615982}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1426644826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1426644823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8df7cf31ee249fc4795f7c35d8074767, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArrowDistanceFade
+  arrowSprite: {fileID: 1426644825}
+  guidePointer: {fileID: 636150629}
+  manualTarget: {fileID: 0}
+  maxVisibleDistance: 2000
+  fullVisibleDistance: 1500
+  fadeOutWhenVeryClose: 1
+  disappearDistance: 40
+  fadeSpeed: 5
 --- !u!1 &1464185151
 GameObject:
   m_ObjectHideFlags: 0
@@ -2235,7 +2300,8 @@ Transform:
   m_LocalPosition: {x: -222, y: -333, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1426644824}
   m_Father: {fileID: 636150628}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2134748847
