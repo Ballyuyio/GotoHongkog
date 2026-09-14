@@ -1,6 +1,7 @@
 using UnityEngine;
-using UnityEngine.UI; // ต้องเพิ่มบรรทัดนี้เพื่อใช้งาน UI Image
+using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement; // เพิ่มบรรทัดนี้เพื่อใช้คำสั่งโหลดฉากใหม่ (Restart)
 
 public class DanceGameManager : MonoBehaviour
 {
@@ -9,8 +10,15 @@ public class DanceGameManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI hitText;
 
-    [Header("ลาก UI จอดำ (Dim Background) มาใส่ช่องนี้")]
+    [Header("UI หน้าจอต่างๆ")]
     public Image dimBackground;
+    public GameObject startMenuPanel;
+    public GameObject gameOverPanel; // เพิ่มหน้าจอ Game Over
+
+    [Header("ระบบเลือด (HP)")]
+    public int maxHP = 10; // เลือดสูงสุด (ตั้งค่าได้ใน Inspector)
+    private int currentHP;
+    public Slider hpBar; // ใช้ UI Slider มาทำหลอดเลือด
 
     public Transform mainCamera;
     private Vector3 cameraOriginalPos;
@@ -29,6 +37,14 @@ public class DanceGameManager : MonoBehaviour
 
     void Start()
     {
+        // ตั้งค่าเลือดเริ่มต้น
+        currentHP = maxHP;
+        if (hpBar != null)
+        {
+            hpBar.maxValue = maxHP;
+            hpBar.value = currentHP;
+        }
+
         UpdateUI();
         if (hitText != null) hitText.text = "";
 
@@ -37,36 +53,53 @@ public class DanceGameManager : MonoBehaviour
             cameraOriginalPos = mainCamera.position;
         }
 
-        // ซ่อนจอดำไว้ก่อนตอนเริ่มเกม
         if (dimBackground != null)
         {
             Color c = dimBackground.color;
-            c.a = 0f; // ตั้งค่าความโปร่งใสเป็น 0 (มองไม่เห็น)
+            c.a = 0f;
             dimBackground.color = c;
             dimBackground.gameObject.SetActive(false);
         }
+
+        // ปิดหน้า Game Over ไว้ก่อนตอนเริ่มเกม
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+
+        if (startMenuPanel != null) startMenuPanel.SetActive(true);
+
+        NoteSpawner spawner = FindObjectOfType<NoteSpawner>();
+        if (spawner != null) spawner.enabled = false;
+    }
+
+    public void StartGame()
+    {
+        if (startMenuPanel != null) startMenuPanel.SetActive(false);
+
+        NoteSpawner spawner = FindObjectOfType<NoteSpawner>();
+        if (spawner != null) spawner.enabled = true;
+    }
+
+    // ฟังก์ชันสำหรับปุ่ม Restart (เล่นใหม่)
+    public void RestartGame()
+    {
+        // โหลด Scene ปัจจุบันซ้ำอีกครั้ง เพื่อเริ่มเกมใหม่หมด
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     void Update()
     {
-        // 1. ระบบจัดการตัวหนังสือ
         if (hitText != null)
         {
-            // ถ้าจบเกมแล้ว ให้ตัวหนังสือค้างไว้ที่ขนาด 3 เท่า แต่ถ้ายังไม่จบให้หดกลับมาที่ขนาด 1
             Vector3 targetScale = isGameEnded ? Vector3.one * 3f : Vector3.one;
             hitText.transform.localScale = Vector3.Lerp(hitText.transform.localScale, targetScale, Time.deltaTime * 10f);
         }
 
-        // 2. ระบบเฟดหน้าจอมืดตอนจบเกม
         if (isGameEnded && dimBackground != null)
         {
             Color c = dimBackground.color;
-            // ค่อยๆ เปลี่ยนความโปร่งใสจากเดิม ไปหยุดที่ 0.8f (มืด 80%)
             c.a = Mathf.Lerp(c.a, 0.8f, Time.deltaTime * 3f);
             dimBackground.color = c;
         }
 
-        // 3. ระบบสั่นกล้อง
         if (shakeTimer > 0 && mainCamera != null)
         {
             mainCamera.position = cameraOriginalPos + Random.insideUnitSphere * 0.1f;
@@ -101,11 +134,16 @@ public class DanceGameManager : MonoBehaviour
             {
                 hitText.text = "STAGE CLEAR!";
                 hitText.color = Color.yellow;
-                // เด้งขยายใหญ่ไปที่ 4 เท่าก่อน แล้วโค้ดด้านบนจะค่อยๆ ดึงกลับมาหยุดค้างไว้ที่ 3 เท่า
                 hitText.transform.localScale = Vector3.one * 4f;
+
+                hitText.rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                hitText.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                hitText.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+                hitText.rectTransform.sizeDelta = new Vector2(1200f, 400f);
+                hitText.rectTransform.anchoredPosition = new Vector2(-540f, 0f);
+                hitText.alignment = TextAlignmentOptions.Center;
             }
 
-            // เปิดใช้งานจอดำให้พร้อมสำหรับการค่อยๆ มืดลง (Fade)
             if (dimBackground != null) dimBackground.gameObject.SetActive(true);
 
             NoteSpawner spawner = FindObjectOfType<NoteSpawner>();
@@ -116,8 +154,6 @@ public class DanceGameManager : MonoBehaviour
             {
                 Destroy(note);
             }
-
-            Debug.Log("จบมินิเกมแล้ว! หน้าจอกำลังมืดลง");
         }
         else if (score >= 2000 && currentLevel == 2)
         {
@@ -157,6 +193,45 @@ public class DanceGameManager : MonoBehaviour
             hitText.text = "Miss!";
             hitText.color = Color.red;
             hitText.transform.localScale = Vector3.one * 1.5f;
+        }
+
+        // ----------------------------------------------------
+        // ระบบลดเลือดเมื่อพลาด
+        // ----------------------------------------------------
+        currentHP--;
+        if (hpBar != null) hpBar.value = currentHP;
+
+        // ถ้าเลือดหมด (น้อยกว่าหรือเท่ากับ 0) ให้เรียกฟังก์ชัน Game Over
+        if (currentHP <= 0)
+        {
+            GameOver();
+        }
+    }
+
+    // ฟังก์ชันจัดการตอนแพ้เกม
+    // ฟังก์ชันจัดการตอนแพ้เกม
+    void GameOver()
+    {
+        isGameEnded = true;
+
+        // ล้างข้อความทิ้งไปเลย จะได้ไม่มีตัวอักษรสีแดงลอยอยู่กลางจอ
+        if (hitText != null)
+        {
+            hitText.text = "";
+        }
+
+        if (dimBackground != null) dimBackground.gameObject.SetActive(true);
+
+        // เปิดหน้าต่าง Game Over (ปุ่ม Restart)
+        if (gameOverPanel != null) gameOverPanel.SetActive(true);
+
+        NoteSpawner spawner = FindObjectOfType<NoteSpawner>();
+        if (spawner != null) spawner.enabled = false;
+
+        GameObject[] remainingNotes = GameObject.FindGameObjectsWithTag("Note");
+        foreach (GameObject note in remainingNotes)
+        {
+            Destroy(note);
         }
     }
 
