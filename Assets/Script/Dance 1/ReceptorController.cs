@@ -4,6 +4,10 @@ using UnityEngine;
 public class ReceptorController : MonoBehaviour
 {
     public KeyCode keyToPress;
+
+    [Header("ใส่ Prefab เอฟเฟกต์ฟองอากาศตรงนี้")]
+    public GameObject hitEffectPrefab;
+
     private List<GameObject> activeNotes = new List<GameObject>();
 
     // ตัวแปรสำหรับเช็กการกดค้าง (Long Note)
@@ -11,11 +15,26 @@ public class ReceptorController : MonoBehaviour
     private GameObject currentLongNote = null;
     private float holdTimer = 0f;
 
+    // ตัวแปรสำหรับทำแอนิเมชันปุ่มยุบ
+    private Vector3 originalScale;
+
+    void Start()
+    {
+        // จดจำขนาดเริ่มต้นของแป้น
+        originalScale = transform.localScale;
+    }
+
     void Update()
     {
+        // ทำให้แป้นค่อยๆ เด้งคืนขนาดเดิมอย่างนุ่มนวลตลอดเวลา (Visual Feedback)
+        transform.localScale = Vector3.Lerp(transform.localScale, originalScale, Time.deltaTime * 10f);
+
         // 1. จังหวะเริ่มกดปุ่ม (หัวโน้ต)
         if (Input.GetKeyDown(keyToPress))
         {
+            // เมื่อกดปุ่ม ให้แป้นยุบตัวลง 20%
+            transform.localScale = originalScale * 0.8f;
+
             if (activeNotes.Count > 0)
             {
                 GameObject noteToHit = activeNotes[0];
@@ -68,14 +87,26 @@ public class ReceptorController : MonoBehaviour
         if (distance <= 0.5f)
         {
             DanceGameManager.instance.AddScore(100, "Perfect!", Color.green);
+            SpawnHitEffect(); // เรียกใช้ Effect
         }
         else if (distance <= 1.0f)
         {
             DanceGameManager.instance.AddScore(50, "Great!", Color.yellow);
+            SpawnHitEffect(); // เรียกใช้ Effect
         }
         else
         {
             DanceGameManager.instance.AddScore(10, "Good!", Color.yellow);
+            // ระดับ Good จะไม่โชว์ Effect ฟองอากาศเพื่อให้เห็นความต่าง
+        }
+    }
+
+    // ฟังก์ชันเสก Effect ฟองอากาศ
+    private void SpawnHitEffect()
+    {
+        if (hitEffectPrefab != null)
+        {
+            Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
         }
     }
 
@@ -93,6 +124,7 @@ public class ReceptorController : MonoBehaviour
             if (other.CompareTag("LongNote") && isHolding && currentLongNote == other.gameObject)
             {
                 DanceGameManager.instance.AddScore(200, "Perfect Hold!", Color.green);
+                SpawnHitEffect(); // เรียกใช้ Effect ปิดท้ายตอนปล่อยสำเร็จ
                 isHolding = false;
                 currentLongNote = null;
             }
