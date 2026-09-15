@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // 1. เพิ่ม namespace ของ New Input System
+using UnityEngine.InputSystem;
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -30,7 +30,6 @@ public class PlayerInteraction : MonoBehaviour
         {
             if (hit.collider.CompareTag(targetTag))
             {
-                // 2. เช็คการกดปุ่ม E ด้วย New Input System
                 if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
                 {
                     ExecuteInteraction(hit.collider.gameObject);
@@ -42,6 +41,19 @@ public class PlayerInteraction : MonoBehaviour
     private void ExecuteInteraction(GameObject targetObject)
     {
         Debug.Log("Interact สำเร็จกับ: " + targetObject.name);
+
+        // ดึงคอมโพเนนต์ข้อมูล InteractableTarget จากวัตถุที่โดน Raycast
+        InteractableTarget targetData = targetObject.GetComponent<InteractableTarget>();
+
+        // ถ้ามีข้อมูลและมีหน้าต่าง UI ในฉาก ให้ส่งข้อมูลไปเปิด Pop-up ทันที
+        if (targetData != null && InfoDisplayUI.Instance != null)
+        {
+            InfoDisplayUI.Instance.DisplayData(targetData);
+        }
+        else if (targetData == null)
+        {
+            Debug.LogWarning($"วัตถุ {targetObject.name} มี Tag '{targetTag}' แต่ยังไม่ได้ใส่สคริปต์ InteractableTarget!");
+        }
     }
 
     private void OnDrawGizmos()
