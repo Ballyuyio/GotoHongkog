@@ -6,18 +6,18 @@ TerrainLayer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SnowMountain
-  m_DiffuseTexture: {fileID: 2800000, guid: 1276b68f4507b2a4d96a97410953a5af, type: 3}
-  m_NormalMapTexture: {fileID: 0}
-  m_MaskMapTexture: {fileID: 0}
-  m_TileSize: {x: 10, y: 10}
+  m_Name: NewLayer
+  m_DiffuseTexture: {fileID: 2800000, guid: 1c886228f24f1d941805536b737159bd, type: 3}
+  m_NormalMapTexture: {fileID: 2800000, guid: 8b262fe05b9fb59478915c7cf68a6879, type: 3}
+  m_MaskMapTexture: {fileID: 2800000, guid: 2665b9178ca5cbd42b1982486d97e602, type: 3}
+  m_TileSize: {x: 50, y: 50}
   m_TileOffset: {x: 0, y: 0}
   m_Specular: {r: 0, g: 0, b: 0, a: 0}
   m_Metallic: 0
   m_Smoothness: 0
   m_NormalScale: 1
   m_DiffuseRemapMin: {x: 0, y: 0, z: 0, w: 0}
-  m_DiffuseRemapMax: {x: 0.5566038, y: 0.3809811, z: 0.20741367, w: 1}
+  m_DiffuseRemapMax: {x: 0.3915094, y: 0.62704986, z: 1, w: 1}
   m_MaskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
   m_MaskMapRemapMax: {x: 1, y: 1, z: 1, w: 1}
   m_SmoothnessSource: 1
