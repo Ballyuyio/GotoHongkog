@@ -435,7 +435,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '" 3500 Score to win "'
+  m_text: '" 4000 Score to win "'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ec2fb75fa53cf664199886cd0523d15f, type: 2}
   m_sharedMaterial: {fileID: -7396064630995151272, guid: ec2fb75fa53cf664199886cd0523d15f, type: 2}

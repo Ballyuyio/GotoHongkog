@@ -200,7 +200,7 @@ public class DanceGameManager : MonoBehaviour
             }
         }
 
-        if (score >= 3500 && !isGameEnded)
+        if (score >= 4000 && !isGameEnded)
         {
             isGameEnded = true;
             isStageCleared = true;
