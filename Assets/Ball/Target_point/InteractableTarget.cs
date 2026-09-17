@@ -2,12 +2,19 @@ using UnityEngine;
 
 public class InteractableTarget : MonoBehaviour
 {
-    [Header("Information")]
-    public string targetName;
+    [Header("Title / Header")]
+    [Tooltip("หัวข้อหลักที่จะนำไปแสดงใน TitleText")]
+    public string targetTitle = "USS Johnston";
     
-    [TextArea(2, 5)]
-    public string[] descriptionParagraphs; // ใส่กี่ท่อนก็ได้ผ่าน Inspector
+    [Tooltip("หัวข้อย่อยหรือชื่อวัตถุ (เผื่อไว้ใช้งานเพิ่มเติม)")]
+    public string subTitle = "DD-557";
+
+    [Header("Description Content")]
+    [TextArea(3, 8)]
+    [Tooltip("ใส่ข้อความประวัติ/ข้อมูลทีละย่อหน้า")]
+    public string[] descriptionParagraphs;
 
     [Header("Images")]
-    public Sprite[] displayImages; // ใส่กี่รูปก็ได้
+    [Tooltip("ใส่รูปภาพประกอบ")]
+    public Sprite[] displayImages;
 }

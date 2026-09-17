@@ -8,7 +8,7 @@ public class InfoDisplayUI : MonoBehaviour
 
     [Header("UI Components")]
     [SerializeField] private GameObject popupRoot;
-    [SerializeField] private CanvasGroup popupCanvasGroup; // ลาก Canvas Group ที่อยู่บน Panel มาใส่
+    [SerializeField] private CanvasGroup popupCanvasGroup;
     [SerializeField] private Text titleText;
     [SerializeField] private Text descriptionText;
     [SerializeField] private Image previewImage;
@@ -28,13 +28,33 @@ public class InfoDisplayUI : MonoBehaviour
     {
         if (data == null) return;
 
-        if (titleText != null) titleText.text = data.targetName;
-
-        if (descriptionText != null)
+        // 1. ดึงข้อมูลส่วน Title ไปใส่ที่ titleText
+        if (titleText != null)
         {
-            descriptionText.text = string.Join("\n\n", data.descriptionParagraphs);
+            if (!string.IsNullOrEmpty(data.targetTitle))
+            {
+                titleText.text = data.targetTitle;
+            }
+            else
+            {
+                titleText.text = data.gameObject.name; // ถ้าลืมใส่ Title ให้ดึงชื่อ GameObject มาใช้แทน
+            }
         }
 
+        // 2. รวมย่อหน้าข้อความเข้าด้วยกัน
+        if (descriptionText != null)
+        {
+            if (data.descriptionParagraphs != null && data.descriptionParagraphs.Length > 0)
+            {
+                descriptionText.text = string.Join("\n\n", data.descriptionParagraphs);
+            }
+            else
+            {
+                descriptionText.text = "";
+            }
+        }
+
+        // 3. กำหนดรูปภาพประกอบ
         if (previewImage != null)
         {
             if (data.displayImages != null && data.displayImages.Length > 0 && data.displayImages[0] != null)
@@ -48,7 +68,7 @@ public class InfoDisplayUI : MonoBehaviour
             }
         }
 
-        // แสดงผลพร้อมแอนิเมชัน
+        // 4. แสดงผล Pop-up พร้อม Fade In
         if (popupRoot != null)
         {
             popupRoot.SetActive(true);
@@ -82,7 +102,6 @@ public class InfoDisplayUI : MonoBehaviour
         }
     }
 
-    // แอนิเมชันแบบ Fade In + Scale Pop ขึ้นมา
     private IEnumerator AnimatePopup(bool opening)
     {
         RectTransform rect = popupCanvasGroup.GetComponent<RectTransform>();
@@ -91,8 +110,8 @@ public class InfoDisplayUI : MonoBehaviour
         float startAlpha = opening ? 0f : 1f;
         float endAlpha = opening ? 1f : 0f;
 
-        Vector3 startScale = opening ? Vector3.one * 0.85f : Vector3.one;
-        Vector3 endScale = opening ? Vector3.one : Vector3.one * 0.85f;
+        Vector3 startScale = opening ? Vector3.one * 0.9f : Vector3.one;
+        Vector3 endScale = opening ? Vector3.one : Vector3.one * 0.9f;
 
         popupCanvasGroup.alpha = startAlpha;
         if (rect != null) rect.localScale = startScale;
@@ -101,8 +120,6 @@ public class InfoDisplayUI : MonoBehaviour
         {
             elapsed += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(elapsed / animDuration);
-            
-            // ใช้ SmoothStep จำลอง CSS cubic-bezier / ease-out
             float smoothT = Mathf.SmoothStep(0f, 1f, t);
 
             popupCanvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, smoothT);
