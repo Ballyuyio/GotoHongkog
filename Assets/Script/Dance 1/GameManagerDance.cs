@@ -21,6 +21,13 @@ public class DanceGameManager : MonoBehaviour
     [Header("เอฟเฟกต์แสงตอนกดได้ Perfect")]
     public GameObject perfectEffect;
 
+    [Header("ระบบเพลงประกอบ")]
+    public AudioSource bgmMusic;
+    // ----------------------------------------------------
+    [Tooltip("ใส่เวลาเป็นวินาที เช่น อยากให้เริ่มเล่นตอนนาทีที่ 1 ให้ใส่ 60")]
+    public float musicStartTime = 0f; // ช่องใหม่สำหรับระบุวินาทีที่จะเริ่มเล่น
+    // ----------------------------------------------------
+
     [Header("ตั้งค่าชื่อหน้าจอหลัก")]
     public string mainSceneName = "MainScaen";
 
@@ -82,6 +89,8 @@ public class DanceGameManager : MonoBehaviour
         if (spawner != null) spawner.enabled = false;
 
         if (perfectEffect != null) perfectEffect.SetActive(false);
+
+        if (bgmMusic != null) bgmMusic.Stop();
     }
 
     public void StartGame()
@@ -90,6 +99,15 @@ public class DanceGameManager : MonoBehaviour
 
         NoteSpawner spawner = FindObjectOfType<NoteSpawner>();
         if (spawner != null) spawner.enabled = true;
+
+        // ----------------------------------------------------
+        // สั่งให้เพลงเริ่มเล่น โดยข้ามไปยังวินาทีที่กำหนดไว้
+        // ----------------------------------------------------
+        if (bgmMusic != null)
+        {
+            bgmMusic.time = musicStartTime; // กระโดดไปที่เวลาที่ตั้งไว้
+            bgmMusic.Play();
+        }
     }
 
     public void RestartGame()
@@ -170,10 +188,6 @@ public class DanceGameManager : MonoBehaviour
             hitText.transform.localScale = Vector3.one * 1.5f;
         }
 
-        // ----------------------------------------------------
-        // อัปเดต: เปลี่ยนมาใช้ .ToLower().Contains("perfect") 
-        // เพื่อให้จับคำว่า Perfect ได้ทุกรูปแบบ ไม่ว่าจะตัวเล็กหรือใหญ่
-        // ----------------------------------------------------
         if (message.ToLower().Contains("perfect") && perfectEffect != null)
         {
             perfectEffect.SetActive(false);
@@ -185,12 +199,13 @@ public class DanceGameManager : MonoBehaviour
                 p.Play();
             }
         }
-        // ----------------------------------------------------
 
         if (score >= 3500 && !isGameEnded)
         {
             isGameEnded = true;
             isStageCleared = true;
+
+            if (bgmMusic != null) bgmMusic.Stop();
 
             if (hitText != null)
             {
@@ -271,6 +286,8 @@ public class DanceGameManager : MonoBehaviour
     void GameOver()
     {
         isGameEnded = true;
+
+        if (bgmMusic != null) bgmMusic.Stop();
 
         if (hitText != null)
         {
