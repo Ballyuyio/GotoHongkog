@@ -18,10 +18,8 @@ public class DanceGameManager : MonoBehaviour
     [Header("UI ตอนชนะ")]
     public TextMeshProUGUI winInstructionText;
 
-    // ----------------------------------------------------
     [Header("เอฟเฟกต์แสงตอนกดได้ Perfect")]
-    public ParticleSystem perfectEffect; // ช่องสำหรับใส่ Particle
-    // ----------------------------------------------------
+    public GameObject perfectEffect;
 
     [Header("ตั้งค่าชื่อหน้าจอหลัก")]
     public string mainSceneName = "MainScaen";
@@ -82,6 +80,8 @@ public class DanceGameManager : MonoBehaviour
 
         NoteSpawner spawner = FindObjectOfType<NoteSpawner>();
         if (spawner != null) spawner.enabled = false;
+
+        if (perfectEffect != null) perfectEffect.SetActive(false);
     }
 
     public void StartGame()
@@ -171,12 +171,19 @@ public class DanceGameManager : MonoBehaviour
         }
 
         // ----------------------------------------------------
-        // ตรวจสอบว่าถ้าข้อความเป็น Perfect ให้เล่นเอฟเฟกต์
-        // (เช็กทั้งแบบมีอัศเจรีย์และไม่มีอัศเจรีย์ เผื่อไว้)
+        // อัปเดต: เปลี่ยนมาใช้ .ToLower().Contains("perfect") 
+        // เพื่อให้จับคำว่า Perfect ได้ทุกรูปแบบ ไม่ว่าจะตัวเล็กหรือใหญ่
         // ----------------------------------------------------
-        if ((message == "Perfect" || message == "Perfect!") && perfectEffect != null)
+        if (message.ToLower().Contains("perfect") && perfectEffect != null)
         {
-            perfectEffect.Play();
+            perfectEffect.SetActive(false);
+            perfectEffect.SetActive(true);
+
+            ParticleSystem[] particles = perfectEffect.GetComponentsInChildren<ParticleSystem>();
+            foreach (ParticleSystem p in particles)
+            {
+                p.Play();
+            }
         }
         // ----------------------------------------------------
 
