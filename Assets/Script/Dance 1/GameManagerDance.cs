@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement; // เพิ่มบรรทัดนี้เพื่อใช้คำสั่งโหลดฉากใหม่ (Restart)
+using UnityEngine.SceneManagement;
 
 public class DanceGameManager : MonoBehaviour
 {
@@ -13,12 +13,28 @@ public class DanceGameManager : MonoBehaviour
     [Header("UI หน้าจอต่างๆ")]
     public Image dimBackground;
     public GameObject startMenuPanel;
-    public GameObject gameOverPanel; // เพิ่มหน้าจอ Game Over
+    public GameObject gameOverPanel;
+
+    [Header("UI ตอนชนะ")]
+    public TextMeshProUGUI winInstructionText;
+
+    [Header("เอฟเฟกต์แสงตอนกดได้ Perfect")]
+    public GameObject perfectEffect;
+
+    [Header("ระบบเพลงประกอบ")]
+    public AudioSource bgmMusic;
+    // ----------------------------------------------------
+    [Tooltip("ใส่เวลาเป็นวินาที เช่น อยากให้เริ่มเล่นตอนนาทีที่ 1 ให้ใส่ 60")]
+    public float musicStartTime = 0f; // ช่องใหม่สำหรับระบุวินาทีที่จะเริ่มเล่น
+    // ----------------------------------------------------
+
+    [Header("ตั้งค่าชื่อหน้าจอหลัก")]
+    public string mainSceneName = "MainScaen";
 
     [Header("ระบบเลือด (HP)")]
-    public int maxHP = 10; // เลือดสูงสุด (ตั้งค่าได้ใน Inspector)
+    public int maxHP = 10;
     private int currentHP;
-    public Slider hpBar; // ใช้ UI Slider มาทำหลอดเลือด
+    public Slider hpBar;
 
     public Transform mainCamera;
     private Vector3 cameraOriginalPos;
@@ -30,6 +46,10 @@ public class DanceGameManager : MonoBehaviour
     private int currentLevel = 1;
     private bool isGameEnded = false;
 
+    private bool isStageCleared = false;
+    private float returnTimer = 0f;
+    private bool canClickToReturn = false;
+
     void Awake()
     {
         instance = this;
@@ -37,7 +57,6 @@ public class DanceGameManager : MonoBehaviour
 
     void Start()
     {
-        // ตั้งค่าเลือดเริ่มต้น
         currentHP = maxHP;
         if (hpBar != null)
         {
@@ -61,13 +80,17 @@ public class DanceGameManager : MonoBehaviour
             dimBackground.gameObject.SetActive(false);
         }
 
-        // ปิดหน้า Game Over ไว้ก่อนตอนเริ่มเกม
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
-
         if (startMenuPanel != null) startMenuPanel.SetActive(true);
+
+        if (winInstructionText != null) winInstructionText.gameObject.SetActive(false);
 
         NoteSpawner spawner = FindObjectOfType<NoteSpawner>();
         if (spawner != null) spawner.enabled = false;
+
+        if (perfectEffect != null) perfectEffect.SetActive(false);
+
+        if (bgmMusic != null) bgmMusic.Stop();
     }
 
     public void StartGame()
@@ -76,13 +99,25 @@ public class DanceGameManager : MonoBehaviour
 
         NoteSpawner spawner = FindObjectOfType<NoteSpawner>();
         if (spawner != null) spawner.enabled = true;
+
+        // ----------------------------------------------------
+        // สั่งให้เพลงเริ่มเล่น โดยข้ามไปยังวินาทีที่กำหนดไว้
+        // ----------------------------------------------------
+        if (bgmMusic != null)
+        {
+            bgmMusic.time = musicStartTime; // กระโดดไปที่เวลาที่ตั้งไว้
+            bgmMusic.Play();
+        }
     }
 
-    // ฟังก์ชันสำหรับปุ่ม Restart (เล่นใหม่)
     public void RestartGame()
     {
-        // โหลด Scene ปัจจุบันซ้ำอีกครั้ง เพื่อเริ่มเกมใหม่หมด
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void GoToMainScene()
+    {
+        SceneManager.LoadScene(mainSceneName);
     }
 
     void Update()
@@ -109,6 +144,33 @@ public class DanceGameManager : MonoBehaviour
         {
             mainCamera.position = cameraOriginalPos;
         }
+
+        if (isStageCleared)
+        {
+            if (!canClickToReturn)
+            {
+                returnTimer += Time.deltaTime;
+
+                int timeLeft = Mathf.CeilToInt(3f - returnTimer);
+
+                if (timeLeft > 1)
+                {
+                    winInstructionText.text = "Returning to main menu in " + timeLeft + "...";
+                }
+                else
+                {
+                    winInstructionText.text = "- Click anywhere to return -";
+                    canClickToReturn = true;
+                }
+            }
+            else
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    GoToMainScene();
+                }
+            }
+        }
     }
 
     public void AddScore(int amount, string message, Color textColor)
@@ -126,9 +188,24 @@ public class DanceGameManager : MonoBehaviour
             hitText.transform.localScale = Vector3.one * 1.5f;
         }
 
-        if (score >= 3500 && !isGameEnded)
+        if (message.ToLower().Contains("perfect") && perfectEffect != null)
+        {
+            perfectEffect.SetActive(false);
+            perfectEffect.SetActive(true);
+
+            ParticleSystem[] particles = perfectEffect.GetComponentsInChildren<ParticleSystem>();
+            foreach (ParticleSystem p in particles)
+            {
+                p.Play();
+            }
+        }
+
+        if (score >= 4000 && !isGameEnded)
         {
             isGameEnded = true;
+            isStageCleared = true;
+
+            if (bgmMusic != null) bgmMusic.Stop();
 
             if (hitText != null)
             {
@@ -145,6 +222,8 @@ public class DanceGameManager : MonoBehaviour
             }
 
             if (dimBackground != null) dimBackground.gameObject.SetActive(true);
+
+            if (winInstructionText != null) winInstructionText.gameObject.SetActive(true);
 
             NoteSpawner spawner = FindObjectOfType<NoteSpawner>();
             if (spawner != null) spawner.enabled = false;
@@ -195,26 +274,21 @@ public class DanceGameManager : MonoBehaviour
             hitText.transform.localScale = Vector3.one * 1.5f;
         }
 
-        // ----------------------------------------------------
-        // ระบบลดเลือดเมื่อพลาด
-        // ----------------------------------------------------
         currentHP--;
         if (hpBar != null) hpBar.value = currentHP;
 
-        // ถ้าเลือดหมด (น้อยกว่าหรือเท่ากับ 0) ให้เรียกฟังก์ชัน Game Over
         if (currentHP <= 0)
         {
             GameOver();
         }
     }
 
-    // ฟังก์ชันจัดการตอนแพ้เกม
-    // ฟังก์ชันจัดการตอนแพ้เกม
     void GameOver()
     {
         isGameEnded = true;
 
-        // ล้างข้อความทิ้งไปเลย จะได้ไม่มีตัวอักษรสีแดงลอยอยู่กลางจอ
+        if (bgmMusic != null) bgmMusic.Stop();
+
         if (hitText != null)
         {
             hitText.text = "";
@@ -222,7 +296,6 @@ public class DanceGameManager : MonoBehaviour
 
         if (dimBackground != null) dimBackground.gameObject.SetActive(true);
 
-        // เปิดหน้าต่าง Game Over (ปุ่ม Restart)
         if (gameOverPanel != null) gameOverPanel.SetActive(true);
 
         NoteSpawner spawner = FindObjectOfType<NoteSpawner>();
